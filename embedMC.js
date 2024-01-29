@@ -1,30 +1,16 @@
 let embedobject = null;
 
-async function makeEmbedMC(x) {
-	const skill1 = x.skills[0];
-	const skill2 = x.skills[1];
-	const skill3 = x.skills[2];
-	const skill1functions = await getskillfunctions(skill1);
-	const skill2functions = await getskillfunctions(skill2);
-	const skill3functions = await getskillfunctions(skill3);
+async function makeEmbedMC(Mystic_Code) {
 
 	embedobject = {
-		title:  x.name,
-		thumbnail: { url: x.extraAssets.item.male },
-		description: `${x.detail}`,
+		title:  Mystic_Code.name,
+		thumbnail: { url: Mystic_Code.extraAssets.item.male },
+		description: `${Mystic_Code.detail}`,
 		fields: [
-			{
-				name: skill1.name,
-				value: `Details: ${skill1.detail} \n ${ skill1functions.map(i => (`\n ${i.functionName}: ${i.functionMinVal}/${i.functionMaxVal}`))} `,
-			},
-			{
-				name: skill2.name,
-				value: `Details: ${skill2.detail} \n ${ skill2functions.map(i => (`\n ${i.functionName}: ${i.functionMinVal}/${i.functionMaxVal}`))} `,
-			},
-			{
-				name: skill3.name,
-				value: `Details: ${skill3.detail} \n ${ skill3functions.map(i => (`\n ${i.functionName}: ${i.functionMinVal}/${i.functionMaxVal}`))}`,
-			},
+			getskillfunctions(Mystic_Code.skills[0]),
+			getskillfunctions(Mystic_Code.skills[1]),
+			getskillfunctions(Mystic_Code.skills[2]),
+
 
 		],
 
@@ -35,9 +21,20 @@ async function makeEmbedMC(x) {
 }
 
 
-async function getskillfunctions(x) {
-	const skillfunctions = x.functions.map(i => ({ functionName: i.funcPopupText, functionTeam: i.funcTargetTeam, functionMinVal: i.svals[0].Value, functionMaxVal: i.svals[9].Value }));
-	return skillfunctions;
+function getskillfunctions(skill) {
+	let replyText = `${skill.detail}`;
+	for (let i = 0; i < skill.functions.length; i++) {
+		if (skill.functions[i].svals[0].Value === undefined) {
+			replyText += `\n ${skill.functions[i].funcPopupText} `;
+		}
+		else {
+			replyText += `\n ${skill.functions[i].funcPopupText}: ${skill.functions[i].svals[0].Value}/${skill.functions[i].svals[9].Value}`;
+		}
+	}
+	return {
+		name: skill.name,
+		value: replyText };
+
 }
 
 module.exports = {

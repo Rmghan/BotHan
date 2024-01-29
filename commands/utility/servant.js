@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { getServantList } = require('../../fetch');
-const { makeEmbedObject } = require('../../embedobject');
+const { makeEmbedServant } = require('../../embedservant.js');
 
 module.exports = {
 
@@ -19,7 +19,7 @@ module.exports = {
 		await (interaction).deferReply();
 		const servantnumber = await interaction.options.getInteger('servantid');
 		const servant = (await getServantList()).find(e => e.id === servantnumber);
-		const embedpng = await makeEmbedObject(servant);
+		const embedpng = await makeEmbedServant(servant);
 		await (interaction).editReply({ embeds: [embedpng] });
 	},
 	async autocomplete(interaction) {
