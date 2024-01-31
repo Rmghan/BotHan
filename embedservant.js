@@ -29,7 +29,7 @@ function makeEmbedServant(servant) {
 			getskillfunctions(servant.skills.findLast(e => e.num === 1)),
 			getskillfunctions(servant.skills.findLast(e => e.num === 2)),
 			getskillfunctions(servant.skills.findLast(e => e.num === 3)),
-			getNoblePhantasm(servant.noblePhantasms),
+			...getNoblePhantasm(servant.noblePhantasms),
 
 		],
 
@@ -55,8 +55,9 @@ function getskillfunctions(skill) {
 		value: replyText };
 }
 function getNoblePhantasm(NP) {
-	let replyText = '__***\n Noble Phantasm:***__';
+	const replyFields = [];
 	for (let i = 0; i < NP.length; i++) {
+		let replyText = '__***\n Noble Phantasm:***__';
 		replyText += `\n\n\n**NP Type**: *${NP[i].card.toUpperCase()}*\n**Details**: __${NP[i].detail}__`;
 		for (let j = 0; j < NP[i].functions.length; j++) {
 			if (NP[i].functions[j].svals[0].Value === undefined && NP[i].functions[j].funcTargetTeam !== 'enemy') {
@@ -74,9 +75,11 @@ function getNoblePhantasm(NP) {
 			}
 
 		}
+		replyFields.push({ name: NP[i].name,
+			value: replyText });
+
 	}
-	return { name: NP[0].name,
-		value: replyText };
+	return replyFields;
 }
 module.exports = {
 	makeEmbedServant,
