@@ -31,9 +31,9 @@ module.exports = {
 	async autocomplete(interaction) {
 
 		const focusedValue = interaction.options.getFocused().toLowerCase();
-		const possibleCEs = (await getCCList()).filter(e => e.name.toLowerCase().startsWith(focusedValue)).slice(0, 25);
+		const possibleCCs = (await getCCList()).filter(e => e.name.toLowerCase().startsWith(focusedValue)).slice(0, 25);
 		await interaction.respond(
-			possibleCEs.map(x => ({ name: x.name, value: x.id })),
+			possibleCCs.map(x => ({ name: x.name, value: x.id })),
 		);
 	},
 
