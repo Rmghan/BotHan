@@ -1,6 +1,6 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const { getServantList } = require('../../fetch');
-const { makeEmbedServant } = require('../../embedservant.js');
+const { makeEmbedServant, servantSkill1Embed, servantSkill2Embed, servantSkill3Embed, servantNP } = require('../../embedservant.js');
 
 module.exports = {
 
@@ -16,11 +16,32 @@ module.exports = {
 		),
 
 	async execute(interaction) {
+		const skill1button = new ButtonBuilder()
+			.setCustomId('s1Button')
+			.setLabel('S1')
+			.setStyle(ButtonStyle.Primary);
+		const skill2button = new ButtonBuilder()
+			.setCustomId('s2Button')
+			.setLabel('S2')
+			.setStyle(ButtonStyle.Primary);
+		const skill3button = new ButtonBuilder()
+			.setCustomId('s3Button')
+			.setLabel('S3')
+			.setStyle(ButtonStyle.Primary);
+		const npButton = new ButtonBuilder()
+			.setCustomId('npButton')
+			.setLabel('NP')
+			.setStyle(ButtonStyle.Secondary);
+		const buttonRow = new ActionRowBuilder()
+			.addComponents(skill1button, skill2button, skill3button, npButton);
+
+
 		await (interaction).deferReply();
 		const servantnumber = await interaction.options.getInteger('servantid');
 		const servant = (await getServantList()).find(e => e.id === servantnumber);
 		const embedpng = await makeEmbedServant(servant);
-		await (interaction).editReply({ embeds: [embedpng] });
+		const response = await (interaction).editReply({ embeds: [embedpng], components:[buttonRow] });
+		await buttonPress(response, buttonRow, servant);
 	},
 	async autocomplete(interaction) {
 
@@ -31,5 +52,26 @@ module.exports = {
 		);
 	},
 };
+async function buttonPress(response, buttonRow, servant) {
+	const button = await response.awaitMessageComponent();
+	await button.deferUpdate();
+	if (button.customId === 's1Button') {
+		const s1Embed = await servantSkill1Embed(servant);
+		await button.editReply({ embeds: [s1Embed], components: [buttonRow] });
+	}
+	if (button.customId === 's2Button') {
+		const s2Embed = await servantSkill2Embed(servant);
+		await button.editReply({ embeds: [s2Embed], components: [buttonRow] });
+	}
+	if (button.customId === 's3Button') {
+		const s3Embed = await servantSkill3Embed(servant);
+		await button.editReply({ embeds: [s3Embed], components: [buttonRow] });
+	}
+	if (button.customId === 'npButton') {
+		const npEmbed = await servantNP(servant);
+		await button.editReply({ embeds: [npEmbed], components: [buttonRow] });
+	}
 
-// `Max Atk: ${servant.atkMax} \n Max HP: ${servant.hpMax} \n Attribute: ${servant.attribute}`
+
+	buttonPress(response, buttonRow, servant);
+}
