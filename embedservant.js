@@ -48,6 +48,7 @@ function getSkillFunctions(skill) {
 				replyText += `\n${skill[i].functions[j].funcPopupText}`;
 			}
 			else if (skill[i].functions[j].funcTargetTeam !== 'enemy') {
+				// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
 				replyText += `\n***${skill[i].functions[j].funcPopupText}*** : ${skill[i].functions[j].svals[0].Value}/${skill[i].functions[j].svals[9].Value}`;
 			}
 		}

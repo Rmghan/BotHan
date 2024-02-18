@@ -32,8 +32,12 @@ module.exports = {
 			.setCustomId('npButton')
 			.setLabel('NP')
 			.setStyle(ButtonStyle.Secondary);
+		const statsButton = new ButtonBuilder()
+			.setCustomId('statsButton')
+			.setLabel('Stats')
+			.setStyle(ButtonStyle.Secondary);
 		const buttonRow = new ActionRowBuilder()
-			.addComponents(skill1button, skill2button, skill3button, npButton);
+			.addComponents(skill1button, skill2button, skill3button, statsButton, npButton);
 
 
 		await (interaction).deferReply();
@@ -70,6 +74,10 @@ async function buttonPress(response, buttonRow, servant) {
 	if (button.customId === 'npButton') {
 		const npEmbed = await servantNP(servant);
 		await button.editReply({ embeds: [npEmbed], components: [buttonRow] });
+	}
+	if (button.customId === 'statsButton') {
+		const statsEmbed = makeEmbedServant(servant);
+		await button.editReply({ embeds: [statsEmbed], components: [buttonRow] });
 	}
 
 
