@@ -1,3 +1,5 @@
+const { buffNameList, npGainBuff } = require('./constants');
+
 let embedservant = null;
 
 function makeEmbedServant(servant) {
@@ -49,7 +51,15 @@ function getSkillFunctions(skill) {
 			}
 			else if (skill[i].functions[j].funcTargetTeam !== 'enemy') {
 				// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
-				replyText += `\n***${skill[i].functions[j].funcPopupText}*** : ${skill[i].functions[j].svals[0].Value}/${skill[i].functions[j].svals[9].Value}`;
+				if (buffNameList.includes(skill[i].functions[j].funcPopupText) == true) {
+					replyText += `\n***${skill[i].functions[j].funcPopupText}*** : ${skill[i].functions[j].svals[0].Value}/${skill[i].functions[j].svals[9].Value}`;
+				}
+				else if (npGainBuff.includes(skill[i].functions[j].funcPopupText) == true) {
+					replyText += `\n***${skill[i].functions[j].funcPopupText}*** : ${(skill[i].functions[j].svals[0].Value) / 100}%/${(skill[i].functions[j].svals[9].Value) / 100}%`;
+				}
+				else {
+					replyText += `\n***${skill[i].functions[j].funcPopupText}*** : ${(skill[i].functions[j].svals[0].Value) / 10}%/${(skill[i].functions[j].svals[9].Value) / 10}%`;
+				}
 			}
 		}
 
@@ -71,7 +81,21 @@ function getNoblePhantasm(NP) {
 				}
 			}
 			else if (NP[i].functions[j].funcTargetTeam !== 'enemy') {
-				replyText += `\n **${NP[i].functions[j].funcPopupText}**: *${NP[i].functions[j].svals[0].Value}/${NP[i].functions[j].svals2[1].Value}/${NP[i].functions[j].svals3[2].Value}/${NP[i].functions[j].svals4[3].Value}/${NP[i].functions[j].svals5[4].Value}*`;
+				if (buffNameList.includes(NP[i].functions[j].funcPopupText) == true) {
+					replyText += `\n **${NP[i].functions[j].funcPopupText}**: *${NP[i].functions[j].svals[0].Value}/${NP[i].functions[j].svals2[1].Value}/${NP[i].functions[j].svals3[2].Value}/${NP[i].functions[j].svals4[3].Value}/${NP[i].functions[j].svals5[4].Value}*`;
+				}
+				else if (npGainBuff.includes(NP[i].functions[j].funcPopupText) == true) {
+					replyText += `\n **${NP[i].functions[j].funcPopupText}**: *${(NP[i].functions[j].svals[0].Value) / 100}%/${(NP[i].functions[j].svals2[1].Value) / 100}%/${(NP[i].functions[j].svals3[2].Value) / 100}%/${(NP[i].functions[j].svals4[3].Value) / 100}%/${(NP[i].functions[j].svals5[4].Value) / 100}%*`;
+
+				}
+				else {
+					if (NP[i].functions[j].funcPopupText === 'None') {
+						replyText += '\n **Damage**: ';
+					}
+					else {replyText += `\n **${NP[i].functions[j].funcPopupText}**: `;}
+					replyText += `*${(NP[i].functions[j].svals[0].Value) / 10}%/${(NP[i].functions[j].svals2[1].Value) / 10}%/${(NP[i].functions[j].svals3[2].Value) / 10}%/${(NP[i].functions[j].svals4[3].Value) / 10}%/${(NP[i].functions[j].svals5[4].Value) / 10}%*`;
+
+				}
 				if (NP[i].functions[j].svals[0].Count !== -1 && NP[i].functions[j].svals[0].Count !== undefined) {
 					replyText += `(${NP[i].functions[j].svals[0].Count}/${NP[i].functions[j].svals2[1].Count}/${NP[i].functions[j].svals3[2].Count}/${NP[i].functions[j].svals4[3].Count}/${NP[i].functions[j].svals5[4].Count})`;
 				}
