@@ -1,4 +1,4 @@
-const { buffNameList, npGainBuff } = require('./constants');
+const { buffNameList, npGainBuff, servantStateIDs } = require('./constants');
 const { getStateJson } = require('./fetch');
 
 let embedservant = null;
@@ -62,7 +62,7 @@ function makeEmbedServant(servant) {
 
 }
 
-function getSkillFunctions(skill) {
+async function getSkillFunctions(skill) {
 	const replyFields = [];
 	for (let i = 0; i < skill.length; i++) {
 		let replyText = `__${skill[i].detail}__ \n`;
@@ -81,8 +81,8 @@ function getSkillFunctions(skill) {
 				else if (skill[i].functions[j].svals[0].Value <= 100000) {
 					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 10}%/${(skill[i].functions[j].svals[9].Value) / 10}%`;
 				}
-				else {
-					replyText += StateSkill(skill[i].functions[j].svals[0].Value);
+				else if (servantStateIDs.includes(skill[i].functions[j].svals[0].Value.toString()) == false) {
+					replyText += await StateSkill(skill[i].functions[j].svals[0].Value);
 				}
 			}
 		}
@@ -119,7 +119,7 @@ function getclassPassive(skill) {
 	}
 	return replyFields;
 }
-function getNoblePhantasm(NP) {
+async function getNoblePhantasm(NP) {
 	const replyFields = [];
 	for (let i = 0; i < NP.length; i++) {
 		let replyText = `**Rank**: ${NP[i].rank}`;
@@ -161,46 +161,46 @@ function getNoblePhantasm(NP) {
 	return replyFields;
 }
 
-function servantSkill1Embed(servant) {
+async function servantSkill1Embed(servant) {
 	embedservant = {
 		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
-			...getSkillFunctions(servant.skills.filter(e => e.num === 1)),
+			...await getSkillFunctions(servant.skills.filter(e => e.num === 1)),
 		],
 	};
 	return embedservant;
 }
-function servantSkill2Embed(servant) {
+async function servantSkill2Embed(servant) {
 	embedservant = {
 		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
-			...getSkillFunctions(servant.skills.filter(e => e.num === 2)),
+			...await getSkillFunctions(servant.skills.filter(e => e.num === 2)),
 		],
 	};
 	return embedservant;
 }
-function servantSkill3Embed(servant) {
+async function servantSkill3Embed(servant) {
 	embedservant = {
 		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
-			...getSkillFunctions(servant.skills.filter(e => e.num === 3)),
+			...await getSkillFunctions(servant.skills.filter(e => e.num === 3)),
 		],
 	};
 	return embedservant;
 }
-function servantNP(servant) {
+async function servantNP(servant) {
 	embedservant = {
 		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
-			...getNoblePhantasm(servant.noblePhantasms),
+			...await getNoblePhantasm(servant.noblePhantasms),
 		],
 	};
 	return embedservant;
