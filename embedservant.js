@@ -1,6 +1,32 @@
 const { buffNameList, npGainBuff } = require('./constants');
+const { getStateJson } = require('./fetch');
 
 let embedservant = null;
+
+async function StateSkill(stateID) {
+	const state = await getStateJson(stateID);
+	let replyText = '';
+	for (let j = 0; j < state.functions.length; j++) {
+		if (state.functions[j].svals[0].Value === undefined && state.functions[j].funcTargetTeam !== 'enemy') {
+			replyText += `\n* ${state.functions[j].funcPopupText.replace(/\n/g, ' ')}`;
+		}
+		else if (state.functions[j].funcTargetTeam !== 'enemy') {
+		// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
+			if (buffNameList.includes(state.functions[j].funcPopupText) == true) {
+				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${state.functions[j].svals[0].Value}/${state.functions[j].svals[9].Value}`;
+			}
+			else if (npGainBuff.includes(state.functions[j].funcPopupText) == true) {
+				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(state.functions[j].svals[0].Value) / 100}%/${(state.functions[j].svals[9].Value) / 100}%`;
+			}
+			else {
+				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(state.functions[j].svals[0].Value) / 10}%/${(state.functions[j].svals[9].Value) / 10}%`;
+			}
+		}
+	}
+	return replyText;
+
+}
+
 
 function makeEmbedServant(servant) {
 	embedservant = {
@@ -28,11 +54,6 @@ function makeEmbedServant(servant) {
 				name:  '\u200B',
 				value: '\u200B',
 			},
-			//			getSkillFunctions(servant.skills.findLast(e => e.num === 1)),
-			//			getSkillFunctions(servant.skills.findLast(e => e.num === 2)),
-			//			getSkillFunctions(servant.skills.findLast(e => e.num === 3)),
-			//			...getNoblePhantasm(servant.noblePhantasms),
-
 		],
 
 
@@ -57,8 +78,11 @@ function getSkillFunctions(skill) {
 				else if (npGainBuff.includes(skill[i].functions[j].funcPopupText) == true) {
 					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 100}%/${(skill[i].functions[j].svals[9].Value) / 100}%`;
 				}
-				else {
+				else if (skill[i].functions[j].svals[0].Value <= 100000) {
 					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 10}%/${(skill[i].functions[j].svals[9].Value) / 10}%`;
+				}
+				else {
+					replyText += StateSkill(skill[i].functions[j].svals[0].Value);
 				}
 			}
 		}
@@ -193,4 +217,4 @@ function makePassiveEmbed(servant) {
 	return embedservant;
 }
 module.exports = {
-	makeEmbedServant, servantSkill1Embed, servantSkill2Embed, servantSkill3Embed, servantNP, makePassiveEmbed };
+	makeEmbedServant, servantSkill1Embed, servantSkill2Embed, servantSkill3Embed, servantNP, makePassiveEmbed, getSkillFunctions };

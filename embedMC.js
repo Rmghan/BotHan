@@ -1,3 +1,5 @@
+const { getSkillFunctions } = require('./embedservant');
+
 let embedobject = null;
 
 async function makeEmbedMC(Mystic_Code) {
@@ -7,9 +9,7 @@ async function makeEmbedMC(Mystic_Code) {
 		thumbnail: { url: Mystic_Code.extraAssets.item.male },
 		description: `${Mystic_Code.detail}`,
 		fields: [
-			getskillfunctions(Mystic_Code.skills[0]),
-			getskillfunctions(Mystic_Code.skills[1]),
-			getskillfunctions(Mystic_Code.skills[2]),
+			...getSkillFunctions(Mystic_Code.skills.filter(e => e.num === 0)),
 
 
 		],
@@ -20,7 +20,7 @@ async function makeEmbedMC(Mystic_Code) {
 
 }
 
-
+/*
 function getskillfunctions(skill) {
 	let replyText = `${skill.detail}`;
 	for (let i = 0; i < skill.functions.length; i++) {
@@ -36,7 +36,7 @@ function getskillfunctions(skill) {
 		value: replyText };
 
 }
-
+*/
 module.exports = {
 	makeEmbedMC,
 
