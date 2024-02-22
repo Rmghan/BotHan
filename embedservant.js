@@ -13,20 +13,29 @@ async function StateSkill(stateID) {
 		else if (state.functions[j].funcTargetTeam !== 'enemy') {
 		// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
 			if (buffNameList.includes(state.functions[j].funcPopupText) == true) {
-				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${state.functions[j].svals[0].Value}/${state.functions[j].svals[9].Value}`;
+				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${state.functions[j].svals[0].Value}`;
+				if (state.functions[j].svals[9] !== undefined) {
+					replyText += `/${(state.functions[j].svals[9].Value)}`;
+				}
 			}
 			else if (npGainBuff.includes(state.functions[j].funcPopupText) == true) {
 				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(state.functions[j].svals[0].Value) / 100}%/${(state.functions[j].svals[9].Value) / 100}%`;
 			}
+			else if (state.functions[j].svals[0].Value < 100000) {
+				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(state.functions[j].svals[0].Value) / 10}%`;
+				// check if the svals[9] exists before adding it to the skills.
+				if (state.functions[j].svals[9] !== undefined) {
+					replyText += `/${(state.functions[j].svals[9].Value) / 10}%`;
+				}
+			}
 			else {
-				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(state.functions[j].svals[0].Value) / 10}%/${(state.functions[j].svals[9].Value) / 10}%`;
+				replyText += await StateSkill(state.functions[j].svals[0].Value);
 			}
 		}
+
 	}
 	return replyText;
-
 }
-
 
 function makeEmbedServant(servant) {
 	embedservant = {
@@ -78,7 +87,7 @@ async function getSkillFunctions(skill) {
 				else if (npGainBuff.includes(skill[i].functions[j].funcPopupText) == true) {
 					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 100}%/${(skill[i].functions[j].svals[9].Value) / 100}%`;
 				}
-				else if (skill[i].functions[j].svals[0].Value <= 100000) {
+				else if (skill[i].functions[j].svals[0].Value < 100000) {
 					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 10}%/${(skill[i].functions[j].svals[9].Value) / 10}%`;
 				}
 				else if (servantStateIDs.includes(skill[i].functions[j].svals[0].Value.toString()) == false) {
@@ -125,20 +134,25 @@ async function getNoblePhantasm(NP) {
 		let replyText = `**Rank**: ${NP[i].rank}`;
 		replyText += `\n**NP Type**: *${NP[i].card.toUpperCase()}* \n**Details**: __${NP[i].detail}__\n`;
 		for (let j = 0; j < NP[i].functions.length; j++) {
+			// first if to deal with invul/evade and other related buffs that don't have any values.
 			if (NP[i].functions[j].svals[0].Value === undefined && NP[i].functions[j].funcTargetTeam !== 'enemy') {
 				replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**`;
 				if (NP[i].functions[j].svals[0].Count !== -1 && NP[i].functions[j].svals[0].Count !== undefined) {
 					replyText += `(${NP[i].functions[j].svals[0].Count}/${NP[i].functions[j].svals2[1].Count}/${NP[i].functions[j].svals3[2].Count}/${NP[i].functions[j].svals4[3].Count}/${NP[i].functions[j].svals5[4].Count})`;
 				}
 			}
+			// Everything other than invul/evade/non-Value owning buffs go here.
 			else if (NP[i].functions[j].funcTargetTeam !== 'enemy') {
+				// This If checks for all values that are 1x of themselves, e.g Heals etc.
 				if (buffNameList.includes(NP[i].functions[j].funcPopupText) == true) {
 					replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**: *${NP[i].functions[j].svals[0].Value}/${NP[i].functions[j].svals2[1].Value}/${NP[i].functions[j].svals3[2].Value}/${NP[i].functions[j].svals4[3].Value}/${NP[i].functions[j].svals5[4].Value}*`;
 				}
+				// This If checks for all values that are 100x of themselves e.g NP batteries.
 				else if (npGainBuff.includes(NP[i].functions[j].funcPopupText) == true) {
 					replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**: *${(NP[i].functions[j].svals[0].Value) / 100}%/${(NP[i].functions[j].svals2[1].Value) / 100}%/${(NP[i].functions[j].svals3[2].Value) / 100}%/${(NP[i].functions[j].svals4[3].Value) / 100}%/${(NP[i].functions[j].svals5[4].Value) / 100}%*`;
 
 				}
+				// This is where everything else, excluding the State buffs go into.
 				else {
 					if (NP[i].functions[j].funcPopupText === 'None') {
 						replyText += '\n* **DMG**: ';
@@ -147,6 +161,7 @@ async function getNoblePhantasm(NP) {
 					replyText += `*${(NP[i].functions[j].svals[0].Value) / 10}%/${(NP[i].functions[j].svals2[1].Value) / 10}%/${(NP[i].functions[j].svals3[2].Value) / 10}%/${(NP[i].functions[j].svals4[3].Value) / 10}%/${(NP[i].functions[j].svals5[4].Value) / 10}%*`;
 
 				}
+				// This one is to handle the Count-related buffs e.g Castoria's solemn Defense stacks that ramp with NP OC.
 				if (NP[i].functions[j].svals[0].Count !== -1 && NP[i].functions[j].svals[0].Count !== undefined) {
 					replyText += `(${NP[i].functions[j].svals[0].Count}/${NP[i].functions[j].svals2[1].Count}/${NP[i].functions[j].svals3[2].Count}/${NP[i].functions[j].svals4[3].Count}/${NP[i].functions[j].svals5[4].Count})`;
 				}
