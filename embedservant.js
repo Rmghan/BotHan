@@ -11,7 +11,7 @@ async function StateSkill(stateID) {
 			replyText += `\n* ${state.functions[j].funcPopupText.replace(/\n/g, ' ')}`;
 		}
 		else if (state.functions[j].funcTargetTeam !== 'enemy') {
-			// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
+		// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
 			if (buffNameList[state.functions[j].funcPopupText]) {
 				replyText += `\n* ***${state.functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${state.functions[j].svals[0].Value}`;
 				if (state.functions[j].svals[9] !== undefined) {
@@ -39,12 +39,12 @@ async function StateSkill(stateID) {
 
 function makeEmbedServant(servant) {
 	embedservant = {
-		title: servant.name,
+		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
 			{
-				name: 'Servant Atk:',
+				name : 'Servant Atk:',
 				value: `${servant.atkBase}/${servant.atkMax}`,
 				inline: true,
 			},
@@ -60,7 +60,7 @@ function makeEmbedServant(servant) {
 				inline: true,
 			},
 			{
-				name: '\u200B',
+				name:  '\u200B',
 				value: '\u200B',
 			},
 		],
@@ -76,22 +76,21 @@ async function getSkillFunctions(skill) {
 	for (let i = 0; i < skill.length; i++) {
 		let replyText = `__${skill[i].detail}__ \n`;
 		for (let j = 0; j < skill[i].functions.length; j++) {
-			const skillLevel = skill[i].functions[j];
-			if (skillLevel.svals[0].Value === undefined && skillLevel.funcTargetTeam !== 'enemy') {
-				replyText += `\n* ${skillLevel.funcPopupText.replace(/\n/g, ' ')}`;
+			if (skill[i].functions[j].svals[0].Value === undefined && skill[i].functions[j].funcTargetTeam !== 'enemy') {
+				replyText += `\n* ${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}`;
 			}
-			else if (skillLevel.funcTargetTeam !== 'enemy') {
+			else if (skill[i].functions[j].funcTargetTeam !== 'enemy') {
 				// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
-				if (buffNameList[skillLevel.funcPopupText]) {
-					replyText += `\n* ***${skillLevel.funcPopupText.replace(/\n/g, ' ')}*** : ${skillLevel.svals[0].Value}/${skillLevel.svals[9].Value}`;
+				if (buffNameList[skill[i].functions[j].funcPopupText]) {
+					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${skill[i].functions[j].svals[0].Value}/${skill[i].functions[j].svals[9].Value}`;
 				}
-				else if (npGainBuff[skillLevel.funcPopupText]) {
-					replyText += `\n* ***${skillLevel.funcPopupText.replace(/\n/g, ' ')}*** : ${(skillLevel.svals[0].Value) / 100}%/${(skillLevel.svals[9].Value) / 100}%`;
+				else if (npGainBuff[skill[i].functions[j].funcPopupText]) {
+					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 100}%/${(skill[i].functions[j].svals[9].Value) / 100}%`;
 				}
-				else if (skillLevel.svals[0].Value < 100000) {
-					replyText += `\n* ***${skillLevel.funcPopupText.replace(/\n/g, ' ')}*** : ${(skillLevel.svals[0].Value) / 10}%/${(skillLevel.svals[9].Value) / 10}%`;
+				else if (skill[i].functions[j].svals[0].Value < 100000) {
+					replyText += `\n* ***${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}*** : ${(skill[i].functions[j].svals[0].Value) / 10}%/${(skill[i].functions[j].svals[9].Value) / 10}%`;
 				}
-				else if (servantStateIDs.includes(skillLevel.svals[0].Value.toString()) == false) {
+				else if (servantStateIDs.includes(skill[i].functions[j].svals[0].Value.toString()) == false) {
 					replyText += await StateSkill(skill[i].functions[j].svals[0].Value);
 				}
 			}
@@ -106,20 +105,19 @@ function getclassPassive(skill) {
 	for (let i = 0; i < skill.length; i++) {
 		let replyText = `\n${skill[i].detail}\n`;
 		for (let j = 0; j < skill[i].functions.length; j++) {
-			const skillLevel = skill[i].functions[j];
-			if (skillLevel.svals[0].Value === undefined && skillLevel.funcTargetTeam !== 'enemy') {
-				replyText += `\n* ${skillLevel.funcPopupText.replace(/\n/g, ' ')}`;
+			if (skill[i].functions[j].svals[0].Value === undefined && skill[i].functions[j].funcTargetTeam !== 'enemy') {
+				replyText += `\n* ${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}`;
 			}
-			else if (skillLevel.funcTargetTeam !== 'enemy') {
-				// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
-				if (buffNameList[skillLevel.funcPopupText]) {
-					replyText += `* *${skillLevel.funcPopupText.replace(/\n/g, ' ')}* : **${skillLevel.svals[0].Value}**\n`;
+			else if (skill[i].functions[j].funcTargetTeam !== 'enemy') {
+			// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
+				if (buffNameList[skill[i].functions[j].funcPopupText]) {
+					replyText += `* *${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}* : **${skill[i].functions[j].svals[0].Value}**\n`;
 				}
-				else if (npGainBuff[skillLevel.funcPopupText]) {
-					replyText += `* *${skillLevel.funcPopupText.replace(/\n/g, ' ')}* : **${(skillLevel.svals[0].Value) / 100}%**\n`;
+				else if (npGainBuff[skill[i].functions[j].funcPopupText]) {
+					replyText += `* *${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}* : **${(skill[i].functions[j].svals[0].Value) / 100}%**\n`;
 				}
 				else {
-					replyText += `* *${skillLevel.funcPopupText.replace(/\n/g, ' ')}* : **${(skillLevel.svals[0].Value) / 10}%**\n`;
+					replyText += `* *${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}* : **${(skill[i].functions[j].svals[0].Value) / 10}%**\n`;
 				}
 			}
 
@@ -136,48 +134,44 @@ async function getNoblePhantasm(NP) {
 		let replyText = `**Rank**: ${NP[i].rank}`;
 		replyText += `\n**NP Type**: *${NP[i].card.toUpperCase()}* \n**Details**: __${NP[i].detail}__\n`;
 		for (let j = 0; j < NP[i].functions.length; j++) {
-			const npLevel = NP[i].functions[j];
 			// first if to deal with invul/evade and other related buffs that don't have any values.
-			if (npLevel.svals[0].Value === undefined && npLevel.funcTargetTeam !== 'enemy') {
-				replyText += `\n* **${npLevel.funcPopupText.replace(/\n/g, ' ')}**`;
-				if (npLevel.svals[0].Count !== -1 && npLevel.svals[0].Count !== undefined) {
-					replyText += `(${npLevel.svals[0].Count}/
-					${npLevel.svals2[1].Count}/${npLevel.svals3[2].Count}/${npLevel.svals4[3].Count}/${npLevel.svals5[4].Count})`;
+			if (NP[i].functions[j].svals[0].Value === undefined && NP[i].functions[j].funcTargetTeam !== 'enemy') {
+				replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**`;
+				if (NP[i].functions[j].svals[0].Count !== -1 && NP[i].functions[j].svals[0].Count !== undefined) {
+					replyText += `(${NP[i].functions[j].svals[0].Count}/${NP[i].functions[j].svals2[1].Count}/${NP[i].functions[j].svals3[2].Count}/${NP[i].functions[j].svals4[3].Count}/${NP[i].functions[j].svals5[4].Count})`;
 				}
 			}
 			// Everything other than invul/evade/non-Value owning buffs go here.
-			else if (npLevel.funcTargetTeam !== 'enemy') {
+			else if (NP[i].functions[j].funcTargetTeam !== 'enemy') {
 				// This If checks for all values that are 1x of themselves, e.g Heals etc.
-				if (buffNameList[npLevel.funcPopupText]) {
-					replyText += `\n* **${npLevel.funcPopupText.replace(/\n/g, ' ')}**: *${npLevel.svals[0].Value}/${npLevel.svals2[1].Value}/${npLevel.svals3[2].Value}/${npLevel.svals4[3].Value}/${npLevel.svals5[4].Value}*`;
+				if (buffNameList[NP[i].functions[j].funcPopupText]) {
+					replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**: *${NP[i].functions[j].svals[0].Value}/${NP[i].functions[j].svals2[1].Value}/${NP[i].functions[j].svals3[2].Value}/${NP[i].functions[j].svals4[3].Value}/${NP[i].functions[j].svals5[4].Value}*`;
 				}
 				// This If checks for all values that are 100x of themselves e.g NP batteries.
-				else if (npGainBuff[npLevel.funcPopupText]) {
-					replyText += `\n* **${npLevel.funcPopupText.replace(/\n/g, ' ')}**: *${(npLevel.svals[0].Value) / 100}%/${(npLevel.svals2[1].Value) / 100}%/${(npLevel.svals3[2].Value) / 100}%/${(npLevel.svals4[3].Value) / 100}%/${(npLevel.svals5[4].Value) / 100}%*`;
+				else if (npGainBuff[NP[i].functions[j].funcPopupText]) {
+					replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**: *${(NP[i].functions[j].svals[0].Value) / 100}%/${(NP[i].functions[j].svals2[1].Value) / 100}%/${(NP[i].functions[j].svals3[2].Value) / 100}%/${(NP[i].functions[j].svals4[3].Value) / 100}%/${(NP[i].functions[j].svals5[4].Value) / 100}%*`;
 
 				}
 				// This is where everything else, excluding the State buffs go into.
 				else {
-					if (npLevel.funcPopupText === 'None') {
+					if (NP[i].functions[j].funcPopupText === 'None') {
 						replyText += '\n* **DMG**: ';
 					}
-					else { replyText += `\n* **${npLevel.funcPopupText.replace(/\n/g, ' ')}**: `; }
-					replyText += `*${(npLevel.svals[0].Value) / 10}%/${(npLevel.svals2[1].Value) / 10}%/${(npLevel.svals3[2].Value) / 10}%/${(npLevel.svals4[3].Value) / 10}%/${(npLevel.svals5[4].Value) / 10}%*`;
+					else {replyText += `\n* **${NP[i].functions[j].funcPopupText.replace(/\n/g, ' ')}**: `;}
+					replyText += `*${(NP[i].functions[j].svals[0].Value) / 10}%/${(NP[i].functions[j].svals2[1].Value) / 10}%/${(NP[i].functions[j].svals3[2].Value) / 10}%/${(NP[i].functions[j].svals4[3].Value) / 10}%/${(NP[i].functions[j].svals5[4].Value) / 10}%*`;
 
 				}
 				// This one is to handle the Count-related buffs e.g Castoria's solemn Defense stacks that ramp with NP OC.
-				if (npLevel.svals[0].Count !== -1 && npLevel.svals[0].Count !== undefined) {
-					replyText += `(${npLevel.svals[0].Count}/${npLevel.svals2[1].Count}/${npLevel.svals3[2].Count}/${npLevel.svals4[3].Count}/${npLevel.svals5[4].Count})`;
+				if (NP[i].functions[j].svals[0].Count !== -1 && NP[i].functions[j].svals[0].Count !== undefined) {
+					replyText += `(${NP[i].functions[j].svals[0].Count}/${NP[i].functions[j].svals2[1].Count}/${NP[i].functions[j].svals3[2].Count}/${NP[i].functions[j].svals4[3].Count}/${NP[i].functions[j].svals5[4].Count})`;
 				}
-				// if (npLevel.svals[0].)
+				// if (NP[i].functions[j].svals[0].)
 
 			}
 
 		}
-		replyFields.push({
-			name: `__${NP[i].name}__`,
-			value: replyText,
-		});
+		replyFields.push({ name: `__${NP[i].name}__`,
+			value: replyText });
 
 	}
 	return replyFields;
@@ -185,7 +179,7 @@ async function getNoblePhantasm(NP) {
 
 async function servantSkill1Embed(servant) {
 	embedservant = {
-		title: servant.name,
+		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
@@ -196,7 +190,7 @@ async function servantSkill1Embed(servant) {
 }
 async function servantSkill2Embed(servant) {
 	embedservant = {
-		title: servant.name,
+		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
@@ -207,7 +201,7 @@ async function servantSkill2Embed(servant) {
 }
 async function servantSkill3Embed(servant) {
 	embedservant = {
-		title: servant.name,
+		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
@@ -218,7 +212,7 @@ async function servantSkill3Embed(servant) {
 }
 async function servantNP(servant) {
 	embedservant = {
-		title: servant.name,
+		title:  servant.name,
 		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
@@ -230,7 +224,7 @@ async function servantNP(servant) {
 function makePassiveEmbed(servant) {
 	embedservant = {
 		title: servant.name,
-		thumbnail: { url: servant.extraAssets.faces.ascension[2] },
+		thumbnail:{ url: servant.extraAssets.faces.ascension[2] },
 		description: `${servant.rarity}* ${(servant.className).toUpperCase()}`,
 		fields: [
 			...getclassPassive(servant.classPassive),
@@ -239,5 +233,4 @@ function makePassiveEmbed(servant) {
 	return embedservant;
 }
 module.exports = {
-	makeEmbedServant, servantSkill1Embed, servantSkill2Embed, servantSkill3Embed, servantNP, makePassiveEmbed, getSkillFunctions,
-};
+	makeEmbedServant, servantSkill1Embed, servantSkill2Embed, servantSkill3Embed, servantNP, makePassiveEmbed, getSkillFunctions };
