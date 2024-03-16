@@ -1,46 +1,58 @@
 const { SlashCommandBuilder } = require('discord.js');
-// const servantURL = 'https://api.atlasacademy.io/export/NA/basic_servant.json';
-// const ceurl = 'https://api.atlasacademy.io/export/NA/nice_equip.json';
+const { getServantList } = require('../../fetch');
+// const { makeEmbedServant } = require('../../embedservant.js');
+const { classMod, cardTypeMod } = require('../../constants');
 module.exports = {
+
+
 	data: new SlashCommandBuilder()
-		.setName('meta')
-		.setDescription('Selected system')
-		.addStringOption(option =>
-			option.setName('system')
-				.setDescription('meta system')
+		.setName('npdmg')
+		.setDescription('Calculates NP Damage')
+		.addIntegerOption(option =>
+			option.setName('servantid')
+				.setDescription('NA saint graph number of servant')
 				.setRequired(true)
-				.addChoices(
-					{ name: 'SS', value: '3.2' },
-					{ name: 'SSO', value: '5.12' },
-					{ name: 'SOO', value: '4.576' },
-					{ name: 'CC', value: '2.8' },
-					{ name: 'CCO', value: '4.48' },
-					{ name: 'COO', value: '3.96' },
-					{ name: 'KK', value: '2' },
-					{ name: 'KKO', value: '4' },
-					{ name: 'KOO', value: '5.5' },
-					{ name: 'S_SS', value: '3.22' },
-					{ name: 'S_SSO', value: '5.152' },
-					{ name: 'S_SOO', value: '4.356' },
-
-				))
-		.addIntegerOption(option =>
-			option.setName('servant_atk')
-				.setDescription('atk stat of your servant')
-				.setRequired(true))
-
-		.addIntegerOption(option =>
-			option.setName('np_dmg_value')
-				.setDescription('np dmg value')
-				.setRequired(true)),
-
+				.setAutocomplete(true),
+		),
 
 	async execute(interaction) {
-		const servant_atk = (interaction.options.getInteger('servant_atk'));
-		const meta_system = (interaction.options.getString('system'));
-		const np_dmg_value = (interaction.options.getInteger('np_dmg_value'));
-		const total = (Number(meta_system)) * servant_atk * 0.23 * np_dmg_value;
-		await (interaction).reply(`the result is ${total}`);
+		await (interaction).deferReply();
+		const servantnumber = await interaction.options.getInteger('servantid');
+		const servant = (await getServantList()).find(e => e.id === servantnumber);
+		const dmg = await npDmgCalc(servant);
+		await (interaction).editReply({ content: `NP damage: ${dmg}` });
+	},
+	async autocomplete(interaction) {
 
+		const focusedValue = interaction.options.getFocused().toLowerCase();
+		const possibleServants = (await getServantList()).filter(e => e.name.toLowerCase().startsWith(focusedValue)).slice(0, 25);
+		await interaction.respond(
+			possibleServants.map(x => ({ name: `${x.className} ${x.name}`, value: x.id })),
+		);
 	},
 };
+/*
+function typeBuffCalc(servant) {
+// work in progress
+}
+function atkUpCalc(servant) {
+// work in progress
+}
+function npAmpCalc(servant) {
+// work in progress
+}
+function spAtkCalc(servant) {
+// work in progress
+}
+*/
+function npDmgCalc(servant) {
+
+	const servantAtk = (1000 + servant.atkMax);
+	const classMult = classMod[servant.className];
+	const typeMod = cardTypeMod[servant.noblePhantasms[0].card];
+	const damage = servantAtk * classMult * typeMod * 0.23;
+	//	const damage = servantAtk * classMult * atkMod * typeMod * npMod * npValue * 0.23;
+
+	return damage;
+}
+

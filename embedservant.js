@@ -72,7 +72,7 @@ function makeEmbedServant(servant) {
 }
 
 function getSkillFuncText({ skill, i, j }) {
-	return skill[i].functions[j].funcPopupText;
+	return skill[i].functions[j].funcPopupText.replace(/\n/g, ' ');
 }
 function getSkillTargetTeam({ skill, i, j }) {
 	return skill[i].functions[j].funcTargetTeam;
@@ -85,7 +85,7 @@ async function getSkillFunctions(skill) {
 	for (let i = 0; i < skill.length; i++) {
 		let replyText = `__${skill[i].detail}__ \n`;
 		for (let j = 0; j < skill[i].functions.length; j++) {
-			const funcName = getSkillFuncText({ skill, i, j }).replace(/\n/g, ' ');
+			const funcName = getSkillFuncText({ skill, i, j });
 			const funcTargetTeam = getSkillTargetTeam ({ i, j, skill });
 			const skillLvl1Value = getSkillValue({ i, j, skill, level: 0 });
 			const skillLvl10Value = getSkillValue({ i, j, skill, level: 9 });
@@ -119,19 +119,21 @@ function getclassPassive(skill) {
 	for (let i = 0; i < skill.length; i++) {
 		let replyText = `\n${skill[i].detail}\n`;
 		for (let j = 0; j < skill[i].functions.length; j++) {
-			if (skill[i].functions[j].svals[0].Value === undefined && skill[i].functions[j].funcTargetTeam !== 'enemy') {
-				replyText += `\n* ${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}`;
+			const funcName = getSkillFuncText({ skill, i, j });
+			const skillLvl1Value = getSkillValue({ i, j, skill, level: 0 });
+			if (skillLvl1Value === undefined && skill[i].functions[j].funcTargetTeam !== 'enemy') {
+				replyText += `\n* ${funcName}`;
 			}
 			else if (skill[i].functions[j].funcTargetTeam !== 'enemy') {
 			// add ifs and comparative statements with the Constants.js (use includes() function, to fix the value problems)
-				if (buffNameList[skill[i].functions[j].funcPopupText]) {
-					replyText += `* *${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}* : **${skill[i].functions[j].svals[0].Value}**\n`;
+				if (buffNameList[funcName]) {
+					replyText += `* *${funcName}* : **${skillLvl1Value}**\n`;
 				}
-				else if (npGainBuff[skill[i].functions[j].funcPopupText]) {
-					replyText += `* *${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}* : **${(skill[i].functions[j].svals[0].Value) / 100}%**\n`;
+				else if (npGainBuff[funcName]) {
+					replyText += `* *${funcName}* : **${(skillLvl1Value) / 100}%**\n`;
 				}
 				else {
-					replyText += `* *${skill[i].functions[j].funcPopupText.replace(/\n/g, ' ')}* : **${(skill[i].functions[j].svals[0].Value) / 10}%**\n`;
+					replyText += `* *${funcName}* : **${(skillLvl1Value) / 10}%**\n`;
 				}
 			}
 
